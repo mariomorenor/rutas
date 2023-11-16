@@ -9,11 +9,13 @@
                             <ion-label color="primary">Iniciar Sesión</ion-label>
                         </ion-item>
                         <ion-item>
-                            <ion-input label="Usuario" label-placement="floating"></ion-input>
+                            <ion-input v-model="email" label="Usuario" label-placement="floating"></ion-input>
                         </ion-item>
                         <ion-item>
                             <ion-input label="Contraseña" label-placement="floating"></ion-input>
                         </ion-item>
+                        <br>
+                        <ion-button @click="login()" expand="full">Login</ion-button>
                     </ion-list>
                 </ion-card-content>
             </ion-card>
@@ -22,20 +24,26 @@
 </template>
 
 <script lang="ts" setup>
-import { IonPage, IonContent, IonCard, IonCardContent, IonItem, IonImg, IonLabel, IonInput, IonChip, IonList } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardContent, IonItem, IonImg, IonLabel, IonInput, IonChip, IonList, IonButton } from '@ionic/vue';
 import { } from "ionicons/icons";
+import { ref } from 'vue';
+import { useUserStore } from '@/store/userStore';
+import { useRouter } from 'vue-router';
 
-import { useMainStore } from "@/store"
-const store = useMainStore();
+const router = useRouter();
 
-store.getRecords({ model: "banner.usuarios", fields: ["name"] }).then(res => {
-    console.log(res);
+const userStore = useUserStore();
 
-});
+const email = ref('')
 
-store.deleteRecords({ model: "banner.usuarios", id: 2 })
+function login() {
+    userStore.getUserProfile(email.value).then((res) => {
 
-
+        if (res) {
+            router.replace({ name: 'Routes' })
+        }
+    });
+}
 
 </script>
 

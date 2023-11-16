@@ -2,14 +2,15 @@ import { CapacitorHttp, HttpOptions } from '@capacitor/core'
 import { getPlatforms } from '@ionic/vue'
 import { defineStore } from 'pinia'
 
-export const useMainStore = defineStore('main', () => {
-    const isNative = !getPlatforms().includes('desktop')
+export const odooStore = defineStore('odooStore', () => {
+    const isNative = getPlatforms().includes('desktop')
+    console.log(getPlatforms());
 
     // *** Connection Parameters ***
-    const Server = !isNative ? "https://unitec.pucesd.edu.ec/jsonrpc/" : 'api/jsonrpc'; //Environment
-    const user_id = 741;
+    const Server = isNative ? "https://unitec.pucesd.edu.ec/jsonrpc/" : '/api/jsonrpc'; //Environment
+    const user_id = isNative ? 751 : 747;
     const db_name = "pucesd";
-    const api_key = "9d9a9b1bec83440861f6f70b2064b6a16425a559"
+    const api_key = "bot_rutas" // or password
 
     async function Http({ model, action, data }: { model: string, action: "create" | "search" | "write" | "unlink" | "search_read", data: any }) {
 
@@ -27,15 +28,20 @@ export const useMainStore = defineStore('main', () => {
         }
 
         const res = await CapacitorHttp.post(options);
-        console.log(res.data);
-
         return res.data;
     }
-
 
     async function getRecords({ model, domain, fields, offset, limit }: { model: string, domain?: any, fields?: string[], offset?: number, limit?: number }) {
 
         const res = await Http({ model, action: "search_read", data: [domain, fields, offset, limit] })
+
+        return res;
+    }
+
+
+    async function getRecordById({ model, id }: { model: string, id: number }) {
+
+        const res = await Http({ model, action: "search_read", data: [id] })
 
         return res.data;
     }
@@ -47,5 +53,5 @@ export const useMainStore = defineStore('main', () => {
     }
 
 
-    return { getRecords , deleteRecords}
+    return { getRecords, deleteRecords, getRecordById }
 })
